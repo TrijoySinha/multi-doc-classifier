@@ -1,5 +1,5 @@
-import './App.css';
-import { useState } from 'react';
+import "./App.css";
+import { useState } from "react";
 
 function App() {
   const [file, setFile] = useState(null);
@@ -19,15 +19,20 @@ function App() {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
+
+    // Dynamic extraction linking to your .env.local string configuration
+    const BASE_URL =
+      import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
     try {
-      const response = await fetch('http://localhost:8000/predict', {
-        method: 'POST',
+      // Replaced the hardcoded URL string using template literals
+      const response = await fetch(`${BASE_URL}/predict`, {
+        method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Server Error');
+      if (!response.ok) throw new Error("Server Error");
 
       const data = await response.json();
 
@@ -38,20 +43,22 @@ function App() {
 
       setResult(data);
     } catch (error) {
-      alert('Backend not reachable. Ensure main.py is running.');
+      alert("Backend not reachable. Ensure main.py is running.");
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const isInvalid = result?.label === 'Invalid Document';
+  const isInvalid = result?.label === "Invalid Document";
 
   return (
     <div className="container">
       <div className="card">
         <h1 className="title">Document Classifier</h1>
-        <p className="subtitle">Upload files to verify authenticity using ViT and PaddleOCR pipeline</p>
+        <p className="subtitle">
+          Upload files to verify authenticity using ViT and PaddleOCR pipeline
+        </p>
 
         <div className="upload-section">
           <input
@@ -66,13 +73,14 @@ function App() {
             onClick={handleUpload}
             disabled={loading || !file}
           >
-            {loading ? 'Analyzing Layout...' : 'Upload & Identify'}
+            {loading ? "Analyzing Layout..." : "Upload & Identify"}
           </button>
         </div>
 
         {result && (
-          <div className={`result-container ${isInvalid ? 'invalid-layout' : 'valid-layout'}`}>
-            
+          <div
+            className={`result-container ${isInvalid ? "invalid-layout" : "valid-layout"}`}
+          >
             {/* Top Status Header */}
             <div className="status-header">
               <span className="res-tag">Final Status</span>
@@ -99,7 +107,8 @@ function App() {
               <div className="result-item full-width border-top">
                 <span className="res-tag">OCR Pipeline Result</span>
                 <div className="res-value small">
-                  {result.ocr_prediction} <span className="score-badge">Score: {result.ocr_score}</span>
+                  {result.ocr_prediction}{" "}
+                  <span className="score-badge">Score: {result.ocr_score}</span>
                 </div>
               </div>
             </div>
@@ -111,7 +120,6 @@ function App() {
                 <pre className="preview-text">{result.ocr_text_preview}</pre>
               </div>
             )}
-
           </div>
         )}
       </div>
