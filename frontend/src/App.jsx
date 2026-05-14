@@ -21,12 +21,9 @@ function App() {
     const formData = new FormData();
     formData.append("file", file);
 
-    // Dynamic extraction linking to your .env.local string configuration
-    const BASE_URL =
-      import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
     try {
-      // Replaced the hardcoded URL string using template literals
       const response = await fetch(`${BASE_URL}/predict`, {
         method: "POST",
         body: formData,
@@ -57,7 +54,7 @@ function App() {
       <div className="card">
         <h1 className="title">Document Classifier</h1>
         <p className="subtitle">
-          Upload files to verify authenticity using ViT and PaddleOCR pipeline
+          Upload files to verify authenticity using the fine-tuned ViT vision transformer pipeline
         </p>
 
         <div className="upload-section">
@@ -78,48 +75,20 @@ function App() {
         </div>
 
         {result && (
-          <div
-            className={`result-container ${isInvalid ? "invalid-layout" : "valid-layout"}`}
-          >
-            {/* Top Status Header */}
+          <div className={`result-container ${isInvalid ? "invalid-layout" : "valid-layout"}`}>
+            {/* Main Identification Output */}
             <div className="status-header">
-              <span className="res-tag">Final Status</span>
+              <span className="res-tag">Document Type</span>
               <div className="res-value main-label">{result.label}</div>
             </div>
 
-            {/* Structured Meta Grid */}
+            {/* Model Confidence Metric */}
             <div className="metrics-grid">
-              <div className="result-item">
-                <span className="res-tag">Decision Source</span>
-                <div className="res-value small">{result.source}</div>
-              </div>
-
-              <div className="result-item">
-                <span className="res-tag">ViT Confidence</span>
-                <div className="res-value small">{result.vit_confidence}</div>
-              </div>
-
               <div className="result-item full-width">
-                <span className="res-tag">ViT Prediction</span>
-                <div className="res-value small">{result.vit_prediction}</div>
-              </div>
-
-              <div className="result-item full-width border-top">
-                <span className="res-tag">OCR Pipeline Result</span>
-                <div className="res-value small">
-                  {result.ocr_prediction}{" "}
-                  <span className="score-badge">Score: {result.ocr_score}</span>
-                </div>
+                <span className="res-tag">Classification Confidence</span>
+                <div className="res-value model-confidence">{result.confidence}</div>
               </div>
             </div>
-
-            {/* Dedicated Text Block */}
-            {result.ocr_text_preview && (
-              <div className="text-preview-box">
-                <span className="res-tag">Extracted Tokens / Match String</span>
-                <pre className="preview-text">{result.ocr_text_preview}</pre>
-              </div>
-            )}
           </div>
         )}
       </div>
