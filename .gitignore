@@ -34,6 +34,10 @@ models/
 # ---------------- FRONTEND ----------------
 frontend/node_modules/
 frontend/dist/
+frontend/.next/
+frontend/.nuxt/
+frontend/.env.local
+
 
 # ---------------- OS FILES ----------------
 .DS_Store
