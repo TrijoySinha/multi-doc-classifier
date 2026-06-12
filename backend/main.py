@@ -14,6 +14,7 @@ os.environ["HF_HOME"] = str(LOCAL_CACHE_DIR)
 import torch
 import easyocr
 import numpy as np
+from rapidfuzz import fuzz
 from PIL import Image, UnidentifiedImageError
 from fastapi import FastAPI, UploadFile, File, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -134,7 +135,23 @@ def extract_ocr_text(image: Image.Image) -> str:
 
 
 def keyword_score(text: str, keywords: list[str]) -> int:
-    return sum(1 for keyword in keywords if keyword.lower() in text)
+    score = 0
+
+    for keyword in keywords:
+        keyword = keyword.lower()
+
+        # Exact phrase match
+        if keyword in text:
+            score += 1
+            continue
+
+        # Fuzzy phrase match for OCR mistakes
+        fuzzy_score = fuzz.partial_ratio(keyword, text)
+
+        if fuzzy_score >= 82:
+            score += 1
+
+    return score
 
 
 def analyze_ocr_text(ocr_text: str):
